@@ -1,7 +1,7 @@
 from threading import Timer
 import utils as ut
 import requests
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, render_template
 import webbrowser
 
 
@@ -15,14 +15,14 @@ def create_app(test_config=None):
     @app.route('/')
     def appSetup():
         spotifyURI = ut.getAuthURI()
-        param = ut.createParams(['client_id', 'redirect_uri', 'response_type', 'state'])
+        param = ut.createParams(['client_id', 'redirect_uri', 'response_type', 'scope', 'state'])
         return redirect(ut.createRedirectURI(spotifyURI, param))
 
     @app.route('/redirect', methods=['GET'])
     def redirectSpotify():
         response = request.args
         state = response['state']
-
+        print("Hello")
         if state != ut.getState():
             raise ValueError("State does not match. Incorrect request")
         if 'error' in response:
@@ -33,8 +33,15 @@ def create_app(test_config=None):
         header = ut.createHeader()
         uri = ut.getTokenURI()
         spotifyResponse = requests.post(uri, data=param, headers=header)
-        print(spotifyResponse.text)
-        return "Hello Bitches"
+        ut.setSpotifyUserToken(spotifyResponse.json())
+        return render_template("login.html")
+
+    @app.route("/getPlaylist")
+    def getPlaylists():
+        spotigyPlaylistURI = ut.getPlaylistURI()
+        print("D3 (((((((((")
+        print(ut.__clientDetails)
+        return "heloo"
 
     Timer(1, open_browser).start();
     return app
