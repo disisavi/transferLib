@@ -16,6 +16,7 @@ def create_app(test_config=None):
     def appSetup():
         spotifyURI = ut.getAuthURI()
         param = ut.createParams(['client_id', 'redirect_uri', 'response_type', 'scope', 'state'])
+        print(param)
         return redirect(ut.createRedirectURI(spotifyURI, param))
 
     @app.route('/redirect', methods=['GET'])
@@ -31,6 +32,7 @@ def create_app(test_config=None):
         ut.setAuthCode(response['code'])
         param = ut.createParams(['grant_type', 'code', 'redirect_uri'])
         header = ut.createHeader()
+
         uri = ut.getTokenURI()
         spotifyResponse = requests.post(uri, data=param, headers=header)
         ut.setSpotifyUserToken(spotifyResponse.json())
@@ -39,9 +41,10 @@ def create_app(test_config=None):
     @app.route("/getPlaylist")
     def getPlaylists():
         spotigyPlaylistURI = ut.getPlaylistURI()
-        print("D3 (((((((((")
-        print(ut.__clientDetails)
-        return "heloo"
+        header = ut.createParams(['Authorization'], True)
+        header['Authorization'] = 'Bearer ' + header['Authorization']
+        playlistResponse = requests.get(spotigyPlaylistURI, headers=header)
+        return playlistResponse.json()
 
-    Timer(1, open_browser).start();
+    # Timer(1, open_browser).start();
     return app
