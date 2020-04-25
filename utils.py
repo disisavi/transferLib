@@ -78,6 +78,8 @@ def createRedirectURI(uri: str, params: Dict):
 
 
 def write_playlist_file(list_of_playlists: List[SpotifyPlaylist]):
+    global __spotify_playlist_list
+    __spotify_playlist_list = list_of_playlists
     with open('playlist.json', 'w') as pfile:
         jsonStr = jsonpickle.encode(list_of_playlists, unpicklable=False)
         pfile.write(jsonStr)
