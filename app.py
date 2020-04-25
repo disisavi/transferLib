@@ -3,6 +3,8 @@ import utils as ut
 import requests
 from flask import Flask, redirect, request, render_template
 import webbrowser
+from SpotifyPlaylist import SpotifyPlaylist
+from typing import Dict
 
 
 def create_app(test_config=None):
@@ -44,7 +46,35 @@ def create_app(test_config=None):
         header = ut.createParams(['Authorization'], True)
         header['Authorization'] = 'Bearer ' + header['Authorization']
         playlistResponse = requests.get(spotigyPlaylistURI, headers=header)
-        return playlistResponse.json()
+        spotifyPlaylistList: Dict = playlistResponse.json()['items']
+        list_playlist = []
 
-    # Timer(1, open_browser).start();
+        for ind, spotifyPlaylist in enumerate(spotifyPlaylistList):
+            print(ind)
+            playlist = SpotifyPlaylist(spotifyPlaylist['name'])
+            list_playlist.append(playlist)
+            playlistURI = spotifyPlaylist.get('tracks', None).get('href', None)
+            tracksResponseObject = requests.get(playlistURI, headers=header)
+            tracksResponseObject = tracksResponseObject.json()
+            for idx, tracksResponce in enumerate(tracksResponseObject['items']):
+                print("\t", idx)
+                trackObject = tracksResponce['track']
+                if trackObject is None:
+                    continue
+                artist_names = []
+                nameTrack = trackObject['name']
+                for artist in trackObject['artists']:
+                    artist_names.append(artist['name'])
+
+                playlist.addToPlaylist(nameTrack, artist_names)
+        ut.writePlaylistToFile(list_playlist)
+        return "FeelGood"
+
+    Timer(1, open_browser).start()
     return app
+
+#
+# TODO
+#     1. Please refactor the code. Get playlist is a mess
+#     2. Create a proper Conda Env
+#     3. Start integrating youtube API

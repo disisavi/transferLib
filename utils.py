@@ -1,5 +1,7 @@
-from typing import Dict
+from typing import Dict, List
 from base64 import b64encode
+from SpotifyPlaylist import *
+import jsonpickle
 
 __spotifyUserToken = {}
 __clientDetails = {}
@@ -72,6 +74,12 @@ def createRedirectURI(uri: str, params: Dict):
 
     redirectURI = redirectURI.replace(" ", "%20")
     return redirectURI
+
+
+def writePlaylistToFile(listOfPlaylist: List[SpotifyPlaylist]):
+    with open('playlist.json', 'w') as pfile:
+        jsonStr = jsonpickle.encode(listOfPlaylist, unpicklable=False)
+        pfile.write(jsonStr)
 
 
 with open('dev.properties', 'r') as propFile:
