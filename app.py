@@ -16,16 +16,15 @@ def create_app(test_config=None):
 
     @app.route('/')
     def appSetup():
+        """Entry point for the app, duh"""
         spotifyURI = ut.getAuthURI()
         param = ut.createParams(['client_id', 'redirect_uri', 'response_type', 'scope', 'state'])
-        print(param)
         return redirect(ut.createRedirectURI(spotifyURI, param))
 
     @app.route('/redirect', methods=['GET'])
     def redirectSpotify():
         response = request.args
         state = response['state']
-        print("Hello")
         if state != ut.getState():
             raise ValueError("State does not match. Incorrect request")
         if 'error' in response:
@@ -42,38 +41,37 @@ def create_app(test_config=None):
 
     @app.route("/getPlaylist")
     def getPlaylists():
-        spotigyPlaylistURI = ut.getPlaylistURI()
+        spotify_playlist_uri = ut.getPlaylistURI()
         header = ut.createParams(['Authorization'], True)
         header['Authorization'] = 'Bearer ' + header['Authorization']
-        playlistResponse = requests.get(spotigyPlaylistURI, headers=header)
-        spotifyPlaylistList: Dict = playlistResponse.json()['items']
+        playlist_response = requests.get(spotify_playlist_uri, headers=header)
+        spotify_playlist_list: Dict = playlist_response.json()['items']
         list_playlist = []
 
-        for ind, spotifyPlaylist in enumerate(spotifyPlaylistList):
-            print(ind)
-            playlist = SpotifyPlaylist(spotifyPlaylist['name'])
+        for ind, spotify_playlist in enumerate(spotify_playlist_list):
+            playlist = SpotifyPlaylist(spotify_playlist['name'])
             list_playlist.append(playlist)
-            playlistURI = spotifyPlaylist.get('tracks', None).get('href', None)
-            tracksResponseObject = requests.get(playlistURI, headers=header)
-            tracksResponseObject = tracksResponseObject.json()
-            for idx, tracksResponce in enumerate(tracksResponseObject['items']):
-                print("\t", idx)
-                trackObject = tracksResponce['track']
-                if trackObject is None:
+
+            playlist_uri = spotify_playlist.get('tracks', None).get('href', None)
+            tracks_response_object = requests.get(playlist_uri, headers=header)
+            tracks_response_object = tracks_response_object.json()
+
+            for idx, tracks_responce in enumerate(tracks_response_object['items']):
+                track_object = tracks_responce['track']
+                if track_object is None:
                     continue
                 artist_names = []
-                nameTrack = trackObject['name']
-                for artist in trackObject['artists']:
+                name_track = track_object['name']
+                for artist in track_object['artists']:
                     artist_names.append(artist['name'])
 
-                playlist.addToPlaylist(nameTrack, artist_names)
-        ut.writePlaylistToFile(list_playlist)
+                playlist.addToPlaylist(name_track, artist_names)
+        ut.write_playlist_file(list_playlist)
         return "FeelGood"
 
     Timer(1, open_browser).start()
     return app
 
-#
 # TODO
 #     1. Please refactor the code. Get playlist is a mess
 #     2. Create a proper Conda Env

@@ -3,6 +3,7 @@ from base64 import b64encode
 from SpotifyPlaylist import *
 import jsonpickle
 
+__spotify_playlist_list: List[SpotifyPlaylist] = []
 __spotifyUserToken = {}
 __clientDetails = {}
 delimeter = "="
@@ -76,9 +77,9 @@ def createRedirectURI(uri: str, params: Dict):
     return redirectURI
 
 
-def writePlaylistToFile(listOfPlaylist: List[SpotifyPlaylist]):
+def write_playlist_file(list_of_playlists: List[SpotifyPlaylist]):
     with open('playlist.json', 'w') as pfile:
-        jsonStr = jsonpickle.encode(listOfPlaylist, unpicklable=False)
+        jsonStr = jsonpickle.encode(list_of_playlists, unpicklable=False)
         pfile.write(jsonStr)
 
 
