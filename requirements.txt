@@ -1,7 +1,0 @@
-requests==2.23.0
-Flask
-jsonpickle
-google-api-python-client
-google-auth-httplib2
-google-auth-oauthlib
-gmusicapi
