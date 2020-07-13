@@ -5,7 +5,6 @@ from flask import Flask, redirect, request, render_template
 import webbrowser
 from SpotifyPlaylist import SpotifyPlaylist
 from typing import Dict
-from gmusicapi import Mobileclient
 import jsonpickle
 
 
@@ -69,14 +68,6 @@ def create_app(test_config=None):
 
                 playlist.addToPlaylist(name_track, artist_names)
         ut.write_playlist_file(list_playlist)
-
-        mm = Mobileclient(debug_logging=True)
-        mm.perform_oauth()
-        mm.oauth_login("3eac98031f440a39")
-        ss = mm.search(query="delicate by taylor swift")
-        with open('playlist.json', 'w') as pfile:
-            jsonStr = jsonpickle.encode(ss, unpicklable=False)
-            pfile.write(jsonStr)
 
         return render_template("exitspotify.html")
 
