@@ -4,3 +4,6 @@ ven*
 .vscode
 .DS_Store
 *.json
+build/*
+dist/*
+sample.egg-info/*

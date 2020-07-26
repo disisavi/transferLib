@@ -11,3 +11,4 @@ dependencies:
   - google-api-python-client
   - google-auth-httplib2
   - google-auth-oauthlib
+  - importlib_resources=3.0.0
