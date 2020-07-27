@@ -90,7 +90,6 @@ class Util:
         self.file_name = 'dev.properties'
 
         propFile = files(getFilePath(__name__)).joinpath('dev.properties').read_text()
-
         for line in propFile.split('\n'):
             if len(line.strip()) == 0:
                 continue
