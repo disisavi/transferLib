@@ -29,7 +29,7 @@ def createParams(listOfParameters, spotifySpec=False):
 
 
 def createHeader():
-    header = {}
+    header = {"Content-Type": "application/x-www-form-urlencoded"}
     key = 'Authorization'
     valueToEncode = __clientDetails['client_id'] + ':' + __clientDetails['client_secret']
     value = "Basic ".encode('utf-8') + b64encode(valueToEncode.encode('utf-8'))
@@ -83,12 +83,13 @@ def write_playlist_file(list_of_playlists: List[SpotifyPlaylist]):
         pfile.write(jsonStr)
 
 
-with open('dev.properties', 'r') as propFile:
-    for line in propFile:
-        if len(line.strip()) == 0:
-            continue
+def load_props():
+    with open('dev.properties', 'r') as propFile:
+        for line in propFile:
+            if len(line.strip()) == 0:
+                continue
 
-        lineSplit = line.replace(" ", "").replace("\n", "").split(delimeter)
-        if len(lineSplit) != 2:
-            raise Exception("Invalid File")
-        __clientDetails[lineSplit[0]] = lineSplit[1].replace(",", " ")
+            lineSplit = line.replace(" ", "").replace("\n", "").split(delimeter)
+            if len(lineSplit) != 2:
+                raise Exception("Invalid File")
+            __clientDetails[lineSplit[0]] = lineSplit[1].replace(",", " ")
