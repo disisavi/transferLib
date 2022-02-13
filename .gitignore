@@ -3,3 +3,4 @@ ven*
 .idea
 .vscode
 .DS_Store
+*.json

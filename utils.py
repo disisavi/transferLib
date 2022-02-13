@@ -1,5 +1,8 @@
 from typing import Dict, List
 from base64 import b64encode
+
+import requests
+
 from SpotifyPlaylist import *
 import jsonpickle
 
@@ -13,7 +16,6 @@ def createParams(listOfParameters, spotifySpec=False):
     paramDict = {}
     if spotifySpec:
         targetDict = __spotifyUserToken
-        print(listOfParameters, targetDict)
     else:
         targetDict = __clientDetails
 
@@ -24,7 +26,6 @@ def createParams(listOfParameters, spotifySpec=False):
             paramDict[key] = value
         except KeyError:
             print(" Key " + key + " not found..")
-
     return paramDict
 
 
@@ -34,6 +35,7 @@ def createHeader():
     valueToEncode = __clientDetails['client_id'] + ':' + __clientDetails['client_secret']
     value = "Basic ".encode('utf-8') + b64encode(valueToEncode.encode('utf-8'))
     header[key] = value
+    header['content_type'] = 'application/json'
 
     return header
 
@@ -92,3 +94,16 @@ with open('dev.properties', 'r') as propFile:
         if len(lineSplit) != 2:
             raise Exception("Invalid File")
         __clientDetails[lineSplit[0]] = lineSplit[1].replace(",", " ")
+
+
+def get_till_next(uri: str, headers: Dict):
+    next_uri = uri
+
+    items = []
+    while next_uri:
+        response = requests.get(next_uri, headers=headers)
+        response.raise_for_status()
+        response_object = response.json()
+        next_uri = response_object['next']
+        items.extend(response_object['items'])
+    return items
